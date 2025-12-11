@@ -2,14 +2,14 @@
 <html>
   <head>
     <title>Error - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
     <div class="container">
       <h2>Error</h2>
       <p><%= error %></p>
-      <p><a href="/">Go Home</a></p>
+      <p><a href="<%= basePath %>/">Go Home</a></p>
     </div>
     <%- include('partials/footer') %>
   </body>

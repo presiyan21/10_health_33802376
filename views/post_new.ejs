@@ -7,7 +7,7 @@
     <div class="error-box"><%= error %></div>
   <% } %>
 
-  <form action="/posts/new" method="POST">
+  <form action="<%= basePath %>/posts/new" method="POST">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
     <p>
       <label>Title</label><br/>

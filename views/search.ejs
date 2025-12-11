@@ -2,13 +2,13 @@
 <html>
   <head>
     <title>Search - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
     <div class="container">
       <h2>Search Public Workouts</h2>
-      <form method="GET" action="/workouts/search-results">
+      <form method="GET" action="<%= basePath %>/workouts/search-results">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <p><input type="text" name="q" placeholder="e.g. run, cycling" required/></p>
         <p><button class="btn" type="submit">Search</button></p>

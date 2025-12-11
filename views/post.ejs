@@ -2,7 +2,7 @@
 <html>
   <head>
     <title><%= pageTitle %> - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -18,7 +18,7 @@
             <ul>
               <% attachments.forEach(function(a){ %>
                 <li>
-                  <a href="/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a>
+                  <a href="<%= basePath %>/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a>
                   <small> — uploaded at <%= (a.created_at && typeof a.created_at.toISOString === 'function') ? a.created_at.toISOString().slice(0,19).replace('T',' ') : a.created_at %></small>
                 </li>
               <% }) %>
@@ -44,7 +44,7 @@
                   <div class="comment-attachments">
                     <ul>
                       <% attList.forEach(function(a){ %>
-                        <li><a href="/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a></li>
+                        <li><a href="<%= basePath %>/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a></li>
                       <% }) %>
                     </ul>
                   </div>
@@ -59,7 +59,7 @@
         <% if (currentUser) { %>
           <div id="commentFormWrapper">
             <h4>Add a comment</h4>
-            <form id="commentForm" method="POST" action="/workouts/post/<%= workout.id %>/comment" enctype="multipart/form-data">
+            <form id="commentForm" method="POST" action="<%= basePath %>/workouts/post/<%= workout.id %>/comment" enctype="multipart/form-data">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
               <textarea name="comment" rows="4" cols="60" required></textarea><br/>
               <label>Attachment (optional): <input type="file" name="attachment" /></label><br/>
@@ -68,12 +68,12 @@
             <div id="commentMsg" style="margin-top:10px;"></div>
           </div>
         <% } else { %>
-          <p><a href="/users/login">Log in</a> to add comments.</p>
+          <p><a href="<%= basePath %>/users/login">Log in</a> to add comments.</p>
         <% } %>
       </section>
     </div>
 
-    <script src="/js/comments.js"></script>
+    <script src="<%= basePath %>/js/comments.js"></script>
     <script>
       if (typeof initComments === 'function') initComments(<%= workout.id %>);
     </script>

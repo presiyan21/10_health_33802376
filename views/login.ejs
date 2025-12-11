@@ -2,19 +2,19 @@
 <html>
   <head>
     <title>Login - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
     <div class="container">
       <h2>Login</h2>
-      <form method="POST" action="/users/loggedin">
+      <form method="POST" action="<%= basePath %>/users/loggedin">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <p>Username: <input type="text" name="username" required/></p>
         <p>Password: <input type="password" name="password" required/></p>
         <p><button class="btn" type="submit">Log in</button></p>
       </form>
-      <p><a href="/users/reset">Forgot password?</a></p>
+      <p><a href="<%= basePath %>/users/reset">Forgot password?</a></p>
       <p>Test user: <strong>gold</strong> / <strong>smiths123ABC$</strong></p>
     </div>
     <%- include('partials/footer') %>

@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Verification Results - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -10,7 +10,7 @@
       <% if (success) { %>
         <h2>Verified</h2>
         <p><%= message %></p>
-        <p><a href="/users/login">Log in</a></p>
+        <p><a href="<%= basePath %>/users/login">Log in</a></p>
       <% } else { %>
         <h2>Verification failed</h2>
         <p><%= message %></p>

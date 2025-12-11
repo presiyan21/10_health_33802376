@@ -1,6 +1,6 @@
-// public/js/comments.js
+// js/comments.js
 
-// HTML escaping for user submitted text.
+// HTML escaping for user submitted text
 function escapeHtml(str) {
   if (typeof str !== 'string') return '';
   return str
@@ -12,10 +12,10 @@ function escapeHtml(str) {
 }
 
 
-// Sets up the comment form for a given post.
+// Comment form for a given post
 function initComments(postId) {
   const form = document.getElementById('commentForm');
-  if (!form) return; // page has no comment form
+  if (!form) return; 
 
   const commentList = document.getElementById('commentList');
   const msgEl = document.getElementById('commentMsg');
@@ -27,9 +27,10 @@ function initComments(postId) {
     const formData = new FormData(form);
 
     try {
-      const res = await fetch(`/posts/${postId}/comment`, {
+      const base = (window.BASE || '').replace(/\/$/, ''); 
+      const res = await fetch(`${base}/posts/${postId}/comment`, {
         method: 'POST',
-        body: formData, // includes CSRF token
+        body: formData, 
         headers: { Accept: 'application/json' }
       });
 
@@ -51,7 +52,7 @@ function initComments(postId) {
         return;
       }
 
-      // Build a new comment entry
+      // New comment entry
       const c = data.comment;
       const created = c.created_at ? new Date(c.created_at).toLocaleString() : '';
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title><%= post.title %> - <%= siteName %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -18,7 +18,7 @@
 
         <% if (currentUser && (currentUser === post.username || currentUserRole === 'admin')) { %>
           <div style="margin-top:12px">
-            <form method="POST" action="/posts/<%= post.id %>/delete" style="display:inline">
+            <form method="POST" action="<%= basePath %>/posts/<%= post.id %>/delete" style="display:inline">
               <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
               <button class="btn small danger" type="submit" onclick="return confirm('Delete this post? This cannot be undone.')">Delete Post</button>
             </form>
@@ -41,7 +41,7 @@
 
                 <div>
                   <% if (currentUser && (currentUser === c.username || currentUserRole === 'admin')) { %>
-                    <form method="POST" action="/posts/<%= post.id %>/comments/<%= c.id %>/delete" style="display:inline">
+                    <form method="POST" action="<%= basePath %>/posts/<%= post.id %>/comments/<%= c.id %>/delete" style="display:inline">
                       <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                       <button class="btn small danger" type="submit" onclick="return confirm('Delete this comment?')">Delete</button>
                     </form>
@@ -57,7 +57,7 @@
         <% if (currentUser) { %>
           <div id="commentMsg" aria-live="polite" style="margin-bottom:8px"></div>
 
-          <form id="commentForm" action="/posts/<%= post.id %>/comment" method="POST">
+          <form id="commentForm" action="<%= basePath %>/posts/<%= post.id %>/comment" method="POST">
             <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
             <div class="form-row">
               <label for="commentContent">Add a comment</label>
@@ -68,13 +68,13 @@
             </div>
           </form>
 
-          <script src="/js/comments.js"></script>
+          <script src="<%= basePath %>/js/comments.js"></script>
           <script>
             if (typeof initComments === 'function') initComments(<%= post.id %>);
           </script>
 
         <% } else { %>
-          <p><a href="/users/login" class="btn small">Log in</a> to comment.</p>
+          <p><a href="<%= basePath %>/users/login" class="btn small">Log in</a> to comment.</p>
         <% } %>
       </section>
     </main>

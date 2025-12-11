@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Dashboard - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body>
@@ -21,7 +21,10 @@
         <% } %>
       </p>
 
-      <p><a class="btn" href="/workouts/add">Add new workout</a> <a class="btn" href="/workouts/upload">Upload GPX</a></p>
+      <p>
+        <a class="btn" href="<%= basePath %>/workouts/add">Add new workout</a>
+        <a class="btn" href="<%= basePath %>/workouts/upload">Upload GPX</a>
+      </p>
 
       <div class="chart-wrap">
         <canvas id="weeklyChart" width="800" height="300"></canvas>
@@ -66,7 +69,7 @@
       <% } %>
     </div>
 
-    <script src="/charts.js"></script>
+    <script src="<%= basePath %>/charts.js"></script>
     <script>renderWeeklyChart('weeklyChart');</script>
 
     <%- include('partials/footer') %>

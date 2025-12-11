@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Admin - Users - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -21,7 +21,7 @@
                 <td><%= u.is_verified ? 'Yes' : 'No' %></td>
                 <td><%= u.created_at %></td>
                 <td>
-                  <form method="POST" action="/users/admin/users/<%= u.id %>/role" style="display:inline">
+                  <form method="POST" action="<%= basePath %>/users/admin/users/<%= u.id %>/role" style="display:inline">
                     <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
                     <select name="role">
                       <option value="user" <%= u.role==='user'?'selected':''%>>user</option>

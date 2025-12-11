@@ -2,13 +2,13 @@
 <html>
   <head>
     <title>Upload GPX - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
     <div class="container">
       <h2>Upload a GPX file</h2>
-      <form method="POST" action="/workouts/upload" enctype="multipart/form-data">
+      <form method="POST" action="<%= basePath %>/workouts/upload" enctype="multipart/form-data">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <p><input type="file" name="gpxfile" accept=".gpx,.xml" required/></p>
         <p><button class="btn" type="submit">Upload and import</button></p>

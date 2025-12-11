@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <title>Workouts - <%= siteName %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -12,7 +12,7 @@
     <main class="container">
       <h2 class="page-title">Workouts</h2>
 
-      <form class="card" method="GET" action="/workouts/search-results" aria-label="Search workouts">
+      <form class="card" method="GET" action="<%= basePath %>/workouts/search-results" aria-label="Search workouts">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <div class="form-row" style="display:flex;gap:8px;flex-wrap:wrap">
           <input type="text" name="q" value="<%= q || '' %>" placeholder="Search activities (e.g. run, cycling)" />

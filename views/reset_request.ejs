@@ -2,13 +2,13 @@
 <html>
   <head>
     <title>Password Reset - <%= siteName %></title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="<%= basePath %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
     <div class="container">
       <h2>Password Reset</h2>
-      <form method="POST" action="/users/reset">
+      <form method="POST" action="<%= basePath %>/users/reset">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
         <p>Email: <input type="email" name="email" required /></p>
         <p><button class="btn" type="submit">Request Reset</button></p>
