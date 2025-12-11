@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Verification Results - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <% if (success) { %>
+        <h2>Verified</h2>
+        <p><%= message %></p>
+        <p><a href="/users/login">Log in</a></p>
+      <% } else { %>
+        <h2>Verification failed</h2>
+        <p><%= message %></p>
+      <% } %>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

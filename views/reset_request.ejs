@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Password Reset - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Password Reset</h2>
+      <form method="POST" action="/users/reset">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <p>Email: <input type="email" name="email" required /></p>
+        <p><button class="btn" type="submit">Request Reset</button></p>
+      </form>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

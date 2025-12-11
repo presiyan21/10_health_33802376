@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= pageTitle || 'Home' %> - <%= siteName %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <main class="container">
+      <h2 class="page-title">Welcome to <%= siteName %></h2>
+
+      <div class="card">
+        <p>Track workouts, import GPX files, export your data and visualise weekly totals.</p>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <a class="btn" href="/workouts/search">Search workouts</a>
+          <a class="btn ghost" href="/workouts/add">Add a workout</a>
+          <a class="btn ghost" href="/posts">Community posts</a>
+        </div>
+      </div>
+
+      <section class="card">
+        <h3 style="margin-top:0">Quick links</h3>
+        <ul style="margin:0;padding-left:1.1rem">
+          <li><a href="/about">About</a></li>
+          <li><a href="/workouts/search">Search workouts</a></li>
+          <li><a href="/workouts/add">Add a workout (login required)</a></li>
+        </ul>
+      </section>
+    </main>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

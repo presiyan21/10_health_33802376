@@ -1,0 +1,52 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Community - <%= siteName %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <main class="container">
+      <h2 class="page-title">Community Posts</h2>
+
+      <div style="margin-bottom:12px">
+        <% if (currentUser) { %>
+          <a class="btn" href="/posts/new">+ New Post</a>
+        <% } else { %>
+          <a class="btn small" href="/users/login">Log in</a> to create posts.
+        <% } %>
+      </div>
+
+      <% if (!posts || !posts.length) { %>
+        <div class="card"><p>No posts yet.</p></div>
+      <% } else { %>
+        <ul class="post-list">
+          <% posts.forEach(function(p){ %>
+            <li>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                <div>
+                  <a href="/posts/<%= p.id %>"><strong><%= p.title %></strong></a>
+                  <div class="meta">by <%= p.username %> — <span class="muted"><%= (p.created_at && p.created_at.toLocaleString) ? p.created_at.toLocaleString() : String(p.created_at) %></span></div>
+                </div>
+
+                <div>
+                  <% if (currentUser && (currentUser === p.username || currentUserRole === 'admin')) { %>
+                    <form method="POST" action="/posts/<%= p.id %>/delete" style="display:inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                      <button class="btn small danger" type="submit" onclick="return confirm('Delete this post?')">Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

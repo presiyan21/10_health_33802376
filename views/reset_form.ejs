@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Set New Password - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Set New Password</h2>
+
+      <% if (errors && errors.length) { %>
+        <div class="error-box">
+          <ul>
+            <% errors.forEach(function(e){ %><li><%= e.msg %></li><% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/users/reset/<%= token %>">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <p>New password: <input type="password" name="password" required /></p>
+        <p><button class="btn" type="submit">Set password</button></p>
+      </form>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

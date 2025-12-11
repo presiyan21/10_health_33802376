@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Verify TOTP - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <% const errorMsg = typeof error !== 'undefined' ? error : null; %>
+      <h2>Verify your account</h2>
+      <% if (errorMsg) { %>
+        <div class="error-box"><%= errorMsg %></div>
+      <% } %>
+
+      <p>Scan the QR code below with your authenticator app, or manually copy the secret.</p>
+
+      <% if (qrDataUrl) { %>
+        <div style="max-width:320px;">
+          <img src="<%= qrDataUrl %>" alt="TOTP QR" style="width:100%;"/>
+        </div>
+      <% } %>
+
+      <% if (secret) { %>
+        <p>Secret (manual): <strong><%= secret %></strong></p>
+      <% } %>
+
+      <form method="POST" action="/users/verify-totp">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <input type="hidden" name="username" value="<%= username %>"/>
+        <p>6-digit code: <input name="token" pattern="[0-9]{6}" maxlength="6" required /></p>
+        <p><button class="btn" type="submit">Verify</button></p>
+      </form>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

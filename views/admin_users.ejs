@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Admin - Users - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Users</h2>
+      <% if (users && users.length) { %>
+        <table>
+          <thead><tr><th>ID</th><th>Username</th><th>Email</th><th>Role</th><th>Verified</th><th>Created</th><th>Action</th></tr></thead>
+          <tbody>
+            <% users.forEach(function(u){ %>
+              <tr>
+                <td><%= u.id %></td>
+                <td><%= u.username %></td>
+                <td><%= u.email %></td>
+                <td><%= u.role %></td>
+                <td><%= u.is_verified ? 'Yes' : 'No' %></td>
+                <td><%= u.created_at %></td>
+                <td>
+                  <form method="POST" action="/users/admin/users/<%= u.id %>/role" style="display:inline">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                    <select name="role">
+                      <option value="user" <%= u.role==='user'?'selected':''%>>user</option>
+                      <option value="admin" <%= u.role==='admin'?'selected':''%>>admin</option>
+                      <option value="manager" <%= u.role==='manager'?'selected':''%>>manager</option>
+                      <option value="trainer" <%= u.role==='trainer'?'selected':''%>>trainer</option>
+                    </select>
+                    <button class="btn" type="submit">Save</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No users found.</p>
+      <% } %>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

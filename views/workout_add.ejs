@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Add Workout - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Add a Workout</h2>
+
+      <% if (errors && errors.length) { %>
+        <div class="error-box">
+          <ul>
+            <% errors.forEach(function(e){ %>
+              <li><%= e.msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form method="POST" action="/workouts/add">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+        <p>
+          Activity:
+          <input type="text" name="activity" required value="<%= formData.activity || '' %>"/>
+        </p>
+
+        <p>
+          Date:
+          <input type="date" name="activity_date" required value="<%= formData.activity_date || '' %>"/>
+        </p>
+
+        <p>
+          Duration (mins):
+          <input type="number" name="duration_mins" required min="1" value="<%= formData.duration_mins || '' %>"/>
+        </p>
+
+        <p>
+          Calories (optional):
+          <input type="number" name="calories" min="0" value="<%= formData.calories || '' %>"/>
+        </p>
+
+        <p>
+          Notes:
+          <textarea name="notes"><%= formData.notes || '' %></textarea>
+        </p>
+
+        <p>
+          <label>
+            <input type="checkbox" name="is_public" value="1" <%= formData.is_public ? 'checked' : '' %> />
+            Make this workout public
+          </label>
+        </p>
+
+        <p>
+          <button class="btn" type="submit">Save Workout</button>
+        </p>
+      </form>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

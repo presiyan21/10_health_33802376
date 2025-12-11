@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+  <head>
+    <title><%= pageTitle %> - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <article>
+        <h2><%= workout.activity %></h2>
+        <p><small>By <strong><%= workout.username %></strong> — <%= (workout.activity_date && typeof workout.activity_date.toISOString === 'function') ? workout.activity_date.toISOString().slice(0,10) : (workout.activity_date||'') %></small></p>
+        <p><%= workout.notes || '' %></p>
+
+        <% if (attachments && attachments.length) { %>
+          <div class="attachments">
+            <h4>Attachments</h4>
+            <ul>
+              <% attachments.forEach(function(a){ %>
+                <li>
+                  <a href="/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a>
+                  <small> — uploaded at <%= (a.created_at && typeof a.created_at.toISOString === 'function') ? a.created_at.toISOString().slice(0,19).replace('T',' ') : a.created_at %></small>
+                </li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
+      </article>
+
+      <hr/>
+
+      <section id="comments">
+        <h3>Comments</h3>
+
+        <% if (comments && comments.length) { %>
+          <ul id="commentList">
+            <% comments.forEach(function(c){ %>
+              <li id="comment-<%= c.id %>">
+                <p><strong><%= c.username || 'Deleted user' %></strong> <small><%= (c.created_at && typeof c.created_at.toISOString === 'function') ? c.created_at.toISOString().slice(0,19).replace('T',' ') : c.created_at %></small></p>
+                <p><%= c.comment %></p>
+
+                <% const attList = attsByComment && attsByComment[String(c.id)] ? attsByComment[String(c.id)] : []; %>
+                <% if (attList.length) { %>
+                  <div class="comment-attachments">
+                    <ul>
+                      <% attList.forEach(function(a){ %>
+                        <li><a href="/uploads/<%= a.filename %>" target="_blank"><%= a.original_name %></a></li>
+                      <% }) %>
+                    </ul>
+                  </div>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } else { %>
+          <p>No comments yet.</p>
+        <% } %>
+
+        <% if (currentUser) { %>
+          <div id="commentFormWrapper">
+            <h4>Add a comment</h4>
+            <form id="commentForm" method="POST" action="/workouts/post/<%= workout.id %>/comment" enctype="multipart/form-data">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <textarea name="comment" rows="4" cols="60" required></textarea><br/>
+              <label>Attachment (optional): <input type="file" name="attachment" /></label><br/>
+              <button type="submit" class="btn">Post comment</button>
+            </form>
+            <div id="commentMsg" style="margin-top:10px;"></div>
+          </div>
+        <% } else { %>
+          <p><a href="/users/login">Log in</a> to add comments.</p>
+        <% } %>
+      </section>
+    </div>
+
+    <script src="/js/comments.js"></script>
+    <script>
+      if (typeof initComments === 'function') initComments(<%= workout.id %>);
+    </script>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

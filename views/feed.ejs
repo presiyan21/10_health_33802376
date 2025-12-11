@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Public Feed - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Public Feed</h2>
+
+      <% if (workouts && workouts.length) { %>
+        <% workouts.forEach(function(w){ %>
+          <article class="post">
+            <h3><a href="/workouts/post/<%= w.id %>"><%= w.activity %></a></h3>
+            <p><small>By <strong><%= w.username %></strong> — <%= (w.activity_date && typeof w.activity_date.toISOString === 'function') ? w.activity_date.toISOString().slice(0,10) : (w.activity_date||'') %></small></p>
+            <p><%= w.notes ? (w.notes.length > 200 ? (w.notes.slice(0,200) + '...') : w.notes) : '' %></p>
+            <p><a href="/workouts/post/<%= w.id %>">View post</a></p>
+          </article>
+          <hr/>
+        <% }) %>
+
+        <p>
+          <% if (page > 1) { %>
+            <a href="/workouts/feed?page=<%= page - 1 %>">Previous</a>
+          <% } %>
+          Page <%= page %> of <%= totalPages %>
+          <% if (page < totalPages) { %>
+            <a href="/workouts/feed?page=<%= page + 1 %>">Next</a>
+          <% } %>
+        </p>
+      <% } else { %>
+        <p>No public posts yet.</p>
+      <% } %>
+    </div>
+    <%- include('partials/footer') %>
+  </body>
+</html>

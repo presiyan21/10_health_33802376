@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1>Create a New Post</h1>
+
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="error-box"><%= error %></div>
+  <% } %>
+
+  <form action="/posts/new" method="POST">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+    <p>
+      <label>Title</label><br/>
+      <input type="text" name="title" required value="<%= (formData && formData.title) ? formData.title : '' %>" />
+    </p>
+
+    <p>
+      <label>Content</label><br/>
+      <textarea name="content" rows="8" required><%= (formData && formData.content) ? formData.content : '' %></textarea>
+    </p>
+
+    <p><button class="btn" type="submit">Publish</button></p>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

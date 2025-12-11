@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <a href="/" class="brand-link">
+        <h1 class="brand-title"><%= siteName %></h1>
+      </a>
+      <p class="brand-sub">Simple fitness tracking</p>
+    </div>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/posts">Community</a>
+      <a href="/workouts/search">Search</a>
+
+      <% if (currentUser) { %>
+        <a href="/workouts/dashboard">Dashboard</a>
+        <a href="/workouts/add">Add workout</a>
+        <a href="/workouts/upload">Upload GPX</a>
+        <a href="/workouts/export">Export CSV</a>
+        <% if (currentUserRole === 'admin') { %>
+          <a href="/users/admin/users" class="nav-admin">Admin</a>
+        <% } %>
+        <a href="/users/logout" class="btn small ghost">Logout</a>
+      <% } else { %>
+        <a href="/users/login" class="btn small">Login</a>
+        <a href="/users/register" class="btn small ghost">Register</a>
+      <% } %>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Workouts - <%= siteName %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <main class="container">
+      <h2 class="page-title">Workouts</h2>
+
+      <form class="card" method="GET" action="/workouts/search-results" aria-label="Search workouts">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+        <div class="form-row" style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="text" name="q" value="<%= q || '' %>" placeholder="Search activities (e.g. run, cycling)" />
+          <button class="btn" type="submit">Search</button>
+        </div>
+      </form>
+
+      <% if (workouts && workouts.length) { %>
+        <div class="card">
+          <table class="table" role="table" aria-label="Workouts table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Duration (mins)</th>
+                <th>Calories</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% workouts.forEach(function(w){ %>
+                <tr>
+                  <td><%= w.activity_date && w.activity_date.toISOString ? w.activity_date.toISOString().slice(0,10) : (w.activity_date ? w.activity_date : '') %></td>
+                  <td><%= w.username %></td>
+                  <td><%= w.activity %></td>
+                  <td><%= w.duration_mins %></td>
+                  <td><%= w.calories || 'N/A' %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px">
+            <div class="muted">Page <%= page %> of <%= totalPages %></div>
+
+            <div style="display:flex;gap:8px;">
+              <% if (page > 1) { %>
+                <a class="btn small ghost" href="?q=<%= encodeURIComponent(q || '') %>&page=<%= page - 1 %>">← Previous</a>
+              <% } %>
+              <% if (page < totalPages) { %>
+                <a class="btn small" href="?q=<%= encodeURIComponent(q || '') %>&page=<%= page + 1 %>">Next →</a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+      <% } else { %>
+        <div class="card">
+          <p>No workouts found.</p>
+        </div>
+      <% } %>
+    </main>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

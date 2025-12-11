@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Register - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <div class="container">
+      <h2>Register</h2>
+
+      <% if (errors && errors.length) { %>
+        <div class="error-box">
+          <h4>Problems with your submission:</h4>
+          <ul>
+            <% errors.forEach(function(e){ %>
+              <li><%= e.msg %></li>
+            <% }) %>
+          </ul>
+        </div>
+      <% } %>
+
+      <form id="registerForm" method="POST" action="/users/registered" novalidate>
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+
+        <p class="form-row">
+          <label for="first">First name:</label>
+          <input id="first" name="first" type="text" value="<%= (formData && formData.first) ? formData.first : '' %>" />
+          <div class="field-error" id="err-first"><%= (fieldErrors && fieldErrors.first) ? fieldErrors.first.msg : '' %></div>
+        </p>
+
+        <p class="form-row">
+          <label for="last">Last name:</label>
+          <input id="last" name="last" type="text" value="<%= (formData && formData.last) ? formData.last : '' %>" />
+          <div class="field-error" id="err-last"><%= (fieldErrors && fieldErrors.last) ? fieldErrors.last.msg : '' %></div>
+        </p>
+
+        <p class="form-row">
+          <label for="email">Email:</label>
+          <input id="email" name="email" type="email" value="<%= (formData && formData.email) ? formData.email : '' %>" />
+          <div class="field-error" id="err-email"><%= (fieldErrors && fieldErrors.email) ? fieldErrors.email.msg : '' %></div>
+        </p>
+
+        <p class="form-row">
+          <label for="username">Username:</label>
+          <input id="username" name="username" type="text" value="<%= (formData && formData.username) ? formData.username : '' %>" />
+          <div class="field-error" id="err-username"><%= (fieldErrors && fieldErrors.username) ? fieldErrors.username.msg : '' %></div>
+        </p>
+
+        <p class="form-row">
+          <label for="password">Password:</label>
+          <input id="password" name="password" type="password" />
+          <div class="field-error" id="err-password"><%= (fieldErrors && fieldErrors.password) ? fieldErrors.password.msg : '' %></div>
+
+          <div class="password-hints">
+            <small>
+              Password must be at least 8 characters and include a lowercase, an uppercase, a number and a special character.
+            </small>
+          </div>
+        </p>
+
+        <p><button class="btn" type="submit">Register</button></p>
+      </form>
+
+      <script src="/js/register.js"></script>
+    </div>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

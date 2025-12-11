@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dashboard - <%= siteName %></title>
+    <link rel="stylesheet" href="/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <%- include('partials/header') %>
+    <div class="container">
+      <h2>Your Workouts</h2>
+
+      <p>
+        <strong>Your role:</strong> <%= currentUserRole || 'user' %>
+        <% if (currentUserRole === 'admin') { %>
+          — You have full site administration access.
+        <% } else if (currentUserRole === 'manager') { %>
+          — Manager: you can oversee groups and moderate content.
+        <% } else if (currentUserRole === 'trainer') { %>
+          — Trainer: you can add coaching notes and view assigned trainees.
+        <% } %>
+      </p>
+
+      <p><a class="btn" href="/workouts/add">Add new workout</a> <a class="btn" href="/workouts/upload">Upload GPX</a></p>
+
+      <div class="chart-wrap">
+        <canvas id="weeklyChart" width="800" height="300"></canvas>
+      </div>
+
+      <% if (workouts && workouts.length) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Activity</th>
+              <th>Duration (mins)</th>
+              <th>Calories</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% workouts.forEach(function(w){ %>
+              <tr>
+                <td><%= w.activity_date && w.activity_date.toISOString ? w.activity_date.toISOString().slice(0,10) : (w.activity_date ? w.activity_date : '') %></td>
+                <td><%= w.activity %></td>
+                <td><%= w.duration_mins %></td>
+                <td><%= w.calories || 'N/A' %></td>
+                <td><%= w.notes || '' %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+
+        <p>
+          <% if (page > 1) { %>
+            <a href="?page=<%= page - 1 %>">Previous</a>
+          <% } %>
+          Page <%= page %> of <%= totalPages %>
+          <% if (page < totalPages) { %>
+            <a href="?page=<%= page + 1 %>">Next</a>
+          <% } %>
+        </p>
+
+      <% } else { %>
+        <p>No workouts recorded yet.</p>
+      <% } %>
+    </div>
+
+    <script src="/charts.js"></script>
+    <script>renderWeeklyChart('weeklyChart');</script>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>

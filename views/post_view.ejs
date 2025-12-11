@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><%= post.title %> - <%= siteName %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/main.css" />
+  </head>
+  <body>
+    <%- include('partials/header') %>
+
+    <main class="container">
+      <h2 class="page-title"><%= post.title %></h2>
+
+      <div class="card">
+        <p><%= post.content %></p>
+        <div class="muted">Posted by <%= post.username %> on <%= (post.created_at && post.created_at.toLocaleString) ? post.created_at.toLocaleString() : String(post.created_at) %></div>
+
+        <% if (currentUser && (currentUser === post.username || currentUserRole === 'admin')) { %>
+          <div style="margin-top:12px">
+            <form method="POST" action="/posts/<%= post.id %>/delete" style="display:inline">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+              <button class="btn small danger" type="submit" onclick="return confirm('Delete this post? This cannot be undone.')">Delete Post</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+
+      <section style="margin-top:14px">
+        <h3>Comments</h3>
+
+        <ul id="commentList" class="comment-list">
+          <% comments.forEach(function(c){ %>
+            <li id="comment-<%= c.id %>">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                <div>
+                  <strong><%= c.username %></strong>
+                  <div class="muted"><%= (c.created_at && c.created_at.toLocaleString) ? c.created_at.toLocaleString() : String(c.created_at) %></div>
+                  <p style="margin-top:8px"><%= c.content %></p>
+                </div>
+
+                <div>
+                  <% if (currentUser && (currentUser === c.username || currentUserRole === 'admin')) { %>
+                    <form method="POST" action="/posts/<%= post.id %>/comments/<%= c.id %>/delete" style="display:inline">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                      <button class="btn small danger" type="submit" onclick="return confirm('Delete this comment?')">Delete</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <section style="margin-top:14px">
+        <% if (currentUser) { %>
+          <div id="commentMsg" aria-live="polite" style="margin-bottom:8px"></div>
+
+          <form id="commentForm" action="/posts/<%= post.id %>/comment" method="POST">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+            <div class="form-row">
+              <label for="commentContent">Add a comment</label>
+              <textarea id="commentContent" name="content" required></textarea>
+            </div>
+            <div>
+              <button class="btn" type="submit">Post comment</button>
+            </div>
+          </form>
+
+          <script src="/js/comments.js"></script>
+          <script>
+            if (typeof initComments === 'function') initComments(<%= post.id %>);
+          </script>
+
+        <% } else { %>
+          <p><a href="/users/login" class="btn small">Log in</a> to comment.</p>
+        <% } %>
+      </section>
+    </main>
+
+    <%- include('partials/footer') %>
+  </body>
+</html>
