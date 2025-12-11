@@ -1,17 +1,16 @@
 # Health & Fitness Tracker
 
-A compact fitness-tracking web app built with Node.js, Express and EJS. It lets users log workouts, share posts, upload GPX files, and manage their accounts with secure authentication and TOTP verification.
+Fitness-tracking web app built with Node.js, Express and EJS. It lets users log workouts, share posts, upload GPX files, and manage their accounts with secure authentication and TOTP verification.
 
 ## Features
 - Personal workout dashboard with pagination  
 - Add, edit, search and export workouts (CSV)  
-- GPX upload with automatic parsing  
+- GPX upload   
 - Community posts with comments  
-- Secure registration and login (bcrypt + TOTP)  
+- Secure registration and login 
 - Audit logging for login attempts  
 - Admin panel for managing users  
 - Weekly progress charts powered by Chart.js  
-- Clean EJS-based UI and structured routes
 
 ## Tech Stack
 - **Frontend:** HTML / EJS, CSS, Chart.js  
@@ -25,7 +24,7 @@ A compact fitness-tracking web app built with Node.js, Express and EJS. It lets 
 
 ### 1. Clone the repo
 ```bash
-git clone 
+git clone https://github.com/presiyan21/10_health_33802376
 ```
 
 ### Install dependencies
