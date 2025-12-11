@@ -12,6 +12,9 @@ const { pool, testConnection } = require('./db');
 const app = express();
 const port = Number(process.env.PORT) || 8000;
 
+// trust proxy
+app.set('trust proxy', 1); 
+
 // view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -28,12 +31,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(expressSanitizer());
 
-// session
+// session 
 app.use(session({
   secret: process.env.SESSION_SECRET || 'somefallbacksecret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60 * 60 * 1000 } 
+  proxy: true, 
+  cookie: {
+    maxAge: 60 * 60 * 1000,
+    secure: (process.env.NODE_ENV === 'production'), 
+    sameSite: 'lax'
+  }
 }));
 
 // CSRF protection
@@ -47,19 +55,26 @@ app.use((req, res, next) => {
   csrfProtection(req, res, next);
 });
 
-
 app.use((req, res, next) => {
   res.locals.csrfToken = typeof req.csrfToken === 'function' ? req.csrfToken() : null;
   next();
 });
 
+// dynamic basePath 
+app.use((req, res, next) => {
+  const proto = (req.get('x-forwarded-proto') || req.protocol).split(',')[0].trim();
+  const host = req.get('host');
+  res.locals.basePath = (process.env.HEALTH_BASE_PATH && process.env.HEALTH_BASE_PATH !== 'http://localhost:8000')
+    ? process.env.HEALTH_BASE_PATH
+    : `${proto}://${host}`;
+  next();
+});
+
 // global locals
 app.locals.siteName = 'Health & Fitness Tracker';
-app.locals.basePath = process.env.HEALTH_BASE_PATH || 'http://localhost:8000';
 
 // database
 global.db = pool;
-
 
 // Define user locals 
 app.use((req, res, next) => {
@@ -109,12 +124,10 @@ app.use('/posts', require('./routes/posts'));
 app.use((err, req, res, next) => {
   console.error('ERROR:', err);
 
-  // Chech locals still exist
   res.locals.currentUser = res.locals.currentUser || null;
   res.locals.currentUserRole = res.locals.currentUserRole || null;
   res.locals.isVerified = res.locals.isVerified || false;
 
-  // Special-case: CSRF token errors
   if (err && err.code === 'EBADCSRFTOKEN') {
     return res.status(403).render('error', {
       error: 'Invalid or missing CSRF token. Please reload the page and try again.'
