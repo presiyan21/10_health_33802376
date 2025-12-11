@@ -1,0 +1,11 @@
+home=https://www.doc.gold.ac.uk/usr/389/
+https://www.doc.gold.ac.uk/usr/389/about
+https://www.doc.gold.ac.uk/usr/389/workouts/search
+https://www.doc.gold.ac.uk/usr/389//workouts/search
+https://www.doc.gold.ac.uk/usr/389/posts
+https://www.doc.gold.ac.uk/usr/389//posts/new
+https://www.doc.gold.ac.uk/usr/389//posts/2
+https://www.doc.gold.ac.uk/usr/389/workouts/dashboard
+https://www.doc.gold.ac.uk/usr/389/workouts/add
+https://www.doc.gold.ac.uk/usr/389/workouts/upload
+https://www.doc.gold.ac.uk/usr/389/users/admin/users
