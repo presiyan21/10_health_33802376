@@ -1,13 +1,11 @@
-// routes/users.js - handles registration, login, TOTP setup, and admin user management
-
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { check, validationResult } = require('express-validator');
-const nodemailer = require('nodemailer'); 
-const speakeasy = require('speakeasy');   
-const qrcode = require('qrcode');         
+const nodemailer = require('nodemailer');
+const speakeasy = require('speakeasy');
+const qrcode = require('qrcode');
 
 const db = global.db;
 const saltRounds = 12;
@@ -190,8 +188,10 @@ router.get('/verify-totp', async (req, res, next) => {
 
     const user = rows[0];
 
-    if (user.is_verified)
-      return res.send('Already verified. <a href="/users/login">Log in</a>');
+    if (user.is_verified) {
+      const loginUrl = res.locals.buildUrl('/users/login');
+      return res.send(`Already verified. <a href="${loginUrl}">Log in</a>`);
+    }
 
     // rebuild otpauth URL for QR
     const issuer = encodeURIComponent('Health & Fitness Tracker');
@@ -229,15 +229,17 @@ router.post('/verify-totp', async (req, res, next) => {
 
     const user = rows[0];
 
-    if (user.is_verified)
-      return res.send('Already verified. <a href="/users/login">Log in</a>');
+    if (user.is_verified) {
+      const loginUrl = res.locals.buildUrl('/users/login');
+      return res.send(`Already verified. <a href="${loginUrl}">Log in</a>`);
+    }
 
     // validate TOTP code against secret
     const verified = speakeasy.totp.verify({
       secret: user.totp_secret,
       encoding: 'base32',
       token,
-      window: 1 
+      window: 1
     });
 
     if (!verified) {
@@ -308,7 +310,8 @@ router.post('/loggedin', async (req, res, next) => {
 
     // enforce TOTP verification
     if (!user.is_verified) {
-      return res.redirect(`/users/verify-totp?username=${encodeURIComponent(username)}`);
+      const verifyUrl = `${res.locals.buildUrl('/users/verify-totp')}?username=${encodeURIComponent(username)}`;
+      return res.redirect(verifyUrl);
     }
 
     // success → build session
@@ -316,7 +319,8 @@ router.post('/loggedin', async (req, res, next) => {
     req.session.username = username;
     await logLoginAttempt(username, 'SUCCESS');
 
-    res.redirect('/workouts/dashboard');
+    // redirect to dashboard with base prefix
+    return res.redirect(res.locals.buildUrl('/workouts/dashboard'));
   } catch (err) {
     await logLoginAttempt(username, 'FAILURE');
     next(err);
@@ -328,7 +332,7 @@ router.post('/loggedin', async (req, res, next) => {
 --------------------------------------------------------------- */
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.send('Logged out. <a href="/">Home</a>');
+    res.send(`Logged out. <a href="${res.locals.buildUrl('/')}">Home</a>`);
   });
 });
 
@@ -366,8 +370,10 @@ router.post('/reset', async (req, res, next) => {
       [token, expires, user.id]
     );
 
-    const base = process.env.HEALTH_BASE_PATH || 'http://localhost:8000';
-    const resetUrl = `${base}/users/reset/${token}`;
+    const publicBase = process.env.HEALTH_BASE_PATH ||
+      `${req.protocol}://${req.get('host')}${req.app.locals.base || ''}`;
+
+    const resetUrl = `${publicBase}/users/reset/${token}`;
 
     await transporter.sendMail({
       to: email,
@@ -417,7 +423,6 @@ router.get('/reset/:token', async (req, res, next) => {
 router.post(
   '/reset/:token',
   [
-    // minimal rules – same as registration
     check('password')
       .isLength({ min: 8 })
       .matches(/[a-z]/)
@@ -457,7 +462,7 @@ router.post(
         [hashed, user.id]
       );
 
-      res.send('Password updated. <a href="/users/login">Log in</a>');
+      res.send(`Password updated. <a href="${res.locals.buildUrl('/users/login')}">Log in</a>`);
     } catch (err) {
       next(err);
     }
@@ -468,20 +473,20 @@ router.post(
    Role helpers
 --------------------------------------------------------------- */
 function requireLogin(req, res, next) {
-  if (!req.session.userId) return res.redirect('/users/login');
+  if (!req.session.userId) return res.redirect(res.locals.buildUrl('/users/login'));
   next();
 }
 
 function requireRole(role) {
   return async (req, res, next) => {
-    if (!req.session.userId) return res.redirect('/users/login');
+    if (!req.session.userId) return res.redirect(res.locals.buildUrl('/users/login'));
 
     const [rows] = await db.execute(
       'SELECT role FROM users WHERE id = ?',
       [req.session.userId]
     );
 
-    if (!rows.length) return res.redirect('/users/login');
+    if (!rows.length) return res.redirect(res.locals.buildUrl('/users/login'));
 
     if (rows[0].role !== role)
       return res.status(403).send(`Forbidden: ${role} only`);
@@ -520,7 +525,7 @@ router.post('/admin/users/:id/role', requireAdmin, async (req, res, next) => {
 
     await db.execute('UPDATE users SET role = ? WHERE id = ?', [role, id]);
 
-    res.redirect('/users/admin/users');
+    res.redirect(res.locals.buildUrl('/users/admin/users'));
   } catch (err) {
     next(err);
   }

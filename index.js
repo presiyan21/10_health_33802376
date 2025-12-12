@@ -1,4 +1,3 @@
-// index.js
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -14,17 +13,27 @@ const port = Number(process.env.PORT) || 8000;
 
 // BASE path 
 const BASE = process.env.BASE_PATH || '';
-app.locals.base = BASE; 
+app.locals.base = BASE;
+
+// expose a full basePath 
+app.locals.basePath = process.env.HEALTH_BASE_PATH || `http://localhost:${port}`;
+
+const TRUST_PROXY = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true';
+if (TRUST_PROXY) {
+  app.set('trust proxy', 1);
+}
 
 // view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// static 
-app.use(BASE || '/', express.static(path.join(__dirname, 'public')));
-
-// uploads (also available under BASE)
-app.use(`${BASE}/uploads`, express.static(path.join(__dirname, 'uploads')));
+if (BASE) {
+  app.use(BASE, express.static(path.join(__dirname, 'public')));
+  app.use(`${BASE}/uploads`, express.static(path.join(__dirname, 'uploads')));
+} else {
+  app.use(express.static(path.join(__dirname, 'public')));
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+}
 
 // security + parsing
 app.use(helmet());
@@ -33,14 +42,19 @@ app.use(express.json());
 app.use(expressSanitizer());
 
 // session
+const sessionCookieSecure = process.env.SESSION_COOKIE_SECURE === 'true';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'somefallbacksecret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 60 * 60 * 1000 }
+  cookie: {
+    maxAge: 60 * 60 * 1000,
+    secure: sessionCookieSecure, 
+    path: BASE || '/'            
+  }
 }));
 
-// CSRF protection
+// CSRF protection 
 const csrfProtection = csurf();
 app.use((req, res, next) => {
   const apiPrefix = `${BASE}/api`;
@@ -54,15 +68,20 @@ app.use((req, res, next) => {
   csrfProtection(req, res, next);
 });
 
+// make base and helper and csrf token available in views
 app.use((req, res, next) => {
   res.locals.csrfToken = typeof req.csrfToken === 'function' ? req.csrfToken() : null;
-  res.locals.base = BASE;
+  res.locals.base = BASE || '';
+  res.locals.buildUrl = (p) => {
+    if (!p) return BASE || '/';
+    const pathPart = p.startsWith('/') ? p : `/${p}`;
+    return (BASE || '') + pathPart;
+  };
   next();
 });
 
 // global locals
 app.locals.siteName = 'Health & Fitness Tracker';
-app.locals.basePath = process.env.HEALTH_BASE_PATH || `http://localhost:${port}`;
 
 // database
 global.db = pool;
@@ -75,7 +94,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Attach logged-in user info
+// Attach logged-in user info 
 app.use(async (req, res, next) => {
   try {
     if (req.session && req.session.userId) {
@@ -104,12 +123,20 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Routes 
-app.use(`${BASE}/`, require('./routes/main'));
-app.use(`${BASE}/users`, require('./routes/users'));
-app.use(`${BASE}/workouts`, require('./routes/workouts'));
-app.use(`${BASE}/api`, require('./routes/api'));
-app.use(`${BASE}/posts`, require('./routes/posts'));
+// Routes mount
+if (BASE) {
+  app.use(BASE, require('./routes/main'));
+  app.use(`${BASE}/users`, require('./routes/users'));
+  app.use(`${BASE}/workouts`, require('./routes/workouts'));
+  app.use(`${BASE}/api`, require('./routes/api'));
+  app.use(`${BASE}/posts`, require('./routes/posts'));
+} else {
+  app.use('/', require('./routes/main'));
+  app.use('/users', require('./routes/users'));
+  app.use('/workouts', require('./routes/workouts'));
+  app.use('/api', require('./routes/api'));
+  app.use('/posts', require('./routes/posts'));
+}
 
 // Global error handler 
 app.use((err, req, res, next) => {
@@ -139,7 +166,7 @@ let server;
   try {
     await testConnection();
   } catch (err) {
-    console.error('Exiting because DB connection failed on startup.');
+    console.error('Exiting because DB connection failed on startup.', err.message || err);
     process.exit(1);
   }
 
@@ -166,4 +193,3 @@ async function shutdown(signal) {
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
-
