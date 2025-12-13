@@ -1,10 +1,15 @@
+// no login required
 home=https://www.doc.gold.ac.uk/usr/389/
-https://www.doc.gold.ac.uk/usr/389/about
-https://www.doc.gold.ac.uk/usr/389/workouts/search
-https://www.doc.gold.ac.uk/usr/389//workouts/search
-https://www.doc.gold.ac.uk/usr/389/posts
+about=https://www.doc.gold.ac.uk/usr/389/about
+workout_search=https://www.doc.gold.ac.uk/usr/389/workouts/search
+posts=https://www.doc.gold.ac.uk/usr/389/posts
+example_post=https://www.doc.gold.ac.uk/usr/389//posts/2
+
+
+
+
+// login required before access
 https://www.doc.gold.ac.uk/usr/389//posts/new
-https://www.doc.gold.ac.uk/usr/389//posts/2
 https://www.doc.gold.ac.uk/usr/389/workouts/dashboard
 https://www.doc.gold.ac.uk/usr/389/workouts/add
 https://www.doc.gold.ac.uk/usr/389/workouts/upload
