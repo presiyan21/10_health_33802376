@@ -8,7 +8,9 @@
     </div>
 
     <script>window.BASE = '<%= base %>';</script>
-    <meta name="csrf-token" content="<%= csrfToken %>">
+    <% if (typeof csrfToken !== 'undefined' && csrfToken) { %>
+      <meta name="csrf-token" content="<%= csrfToken %>">
+    <% } %>
 
     <nav class="main-nav" aria-label="Main navigation">
       <a href="<%= base %>/">Home</a>

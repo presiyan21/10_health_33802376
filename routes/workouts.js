@@ -40,13 +40,13 @@ function parsePositiveInt(val, defaultVal) {
 
 // user must be logged in for all private pages
 function requireLogin(req, res, next) {
-  if (!req.session.userId) return res.redirect('/users/login')
+  if (!req.session.userId) return res.redirect(res.locals.buildUrl('/users/login'))
   next()
 }
 
 // admin-gate for privileged routes
 async function requireAdmin(req, res, next) {
-  if (!req.session.userId) return res.redirect('/users/login')
+  if (!req.session.userId) return res.redirect(res.locals.buildUrl('/users/login'))
   try {
     const [rows] = await db.execute('SELECT role FROM users WHERE id = ?', [req.session.userId])
     if (!rows.length || rows[0].role !== 'admin') return res.status(403).send('Forbidden: admin only')
@@ -62,7 +62,7 @@ async function requireAdmin(req, res, next) {
 router.get('/dashboard', requireLogin, async (req, res, next) => {
   try {
     const userId = Number(req.session.userId)
-    if (!Number.isFinite(userId)) return res.redirect('/users/login')
+    if (!Number.isFinite(userId)) return res.redirect(res.locals.buildUrl('/users/login'))
 
     // clamp paging to avoid silly values
     const page = Math.max(1, parsePositiveInt(req.query.page, 1))
@@ -95,7 +95,7 @@ router.get('/add', requireLogin, (req, res) => {
     pageTitle: 'Add Workout',
     formData: {},
     errors: [],
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken ? req.csrfToken() : ''
   })
 })
 
@@ -122,7 +122,7 @@ router.post(
           errors: errors.array(),
           formData,
           pageTitle: 'Add Workout',
-          csrfToken: req.csrfToken()
+          csrfToken: req.csrfToken ? req.csrfToken() : ''
         })
       }
 
@@ -140,7 +140,7 @@ router.post(
         [req.session.userId, activity, activity_date, duration_mins, calories, notes, 'manual', is_public]
       )
 
-      res.redirect('/workouts/dashboard')
+      res.redirect(res.locals.buildUrl('/workouts/dashboard'))
     } catch (err) {
       next(err)
     }
@@ -232,7 +232,7 @@ router.get('/feed', async (req, res, next) => {
       page,
       totalPages,
       pageTitle: 'Public Feed',
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken ? req.csrfToken() : ''
     })
   } catch (err) {
     console.error('[feed] error', err)
@@ -292,7 +292,7 @@ router.get('/post/:id', async (req, res, next) => {
       comments,
       attsByComment,
       pageTitle: `Post: ${workout.activity}`,
-      csrfToken: req.csrfToken()
+      csrfToken: req.csrfToken ? req.csrfToken() : ''
     })
   } catch (err) {
     console.error('[post] error', err)
@@ -332,7 +332,7 @@ router.post('/post/:id/comment', requireLogin, attachUpload.single('attachment')
     if (req.headers.accept?.includes('application/json')) {
       return res.status(400).json({ error: 'Comment required' })
     }
-    return res.redirect(`/post/${workoutId}`)
+    return res.redirect(res.locals.buildUrl(`/workouts/post/${workoutId}`))
   }
 
   const conn = await db.getConnection()
@@ -374,7 +374,7 @@ router.post('/post/:id/comment', requireLogin, attachUpload.single('attachment')
     }
 
     // fallback: reload the post page
-    res.redirect(`/post/${workoutId}#comments`)
+    res.redirect(res.locals.buildUrl(`/workouts/post/${workoutId}`) + '#comments')
   } catch (err) {
     try { await conn.rollback() } catch {}
     console.error('[post comment] error', err)
@@ -444,7 +444,7 @@ const csrfProtection = csurf()
 router.get('/upload', requireLogin, csrfProtection, (req, res) => {
   res.render('upload_gpx', {
     pageTitle: 'Upload GPX',
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken ? req.csrfToken() : ''
   })
 })
 
@@ -616,7 +616,7 @@ router.post(
 
         for (const it of inserts) await insertOne(it)
         return res.send(
-          `GPX uploaded and parsed – ${inserts.length} workout(s) imported <a href="/workouts/dashboard">Back</a>`
+          `GPX uploaded and parsed – ${inserts.length} workout(s) imported <a href="${res.locals.buildUrl('/workouts/dashboard')}">Back</a>`
         )
       }
 
@@ -628,7 +628,7 @@ router.post(
         await insertOne({ ...it, source: 'gpx-text' })
 
       return res.send(
-        `Text file parsed – ${plain.length} workout(s) imported <a href="/workouts/dashboard">Back</a>`
+        `Text file parsed – ${plain.length} workout(s) imported <a href="${res.locals.buildUrl('/workouts/dashboard')}">Back</a>`
       )
     } catch (err) {
       console.error('GPX import error:', err.message || err)

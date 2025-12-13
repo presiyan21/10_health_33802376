@@ -1,5 +1,3 @@
-// routes/users.js
-
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
@@ -63,7 +61,7 @@ router.get('/register', (req, res) => {
     fieldErrors: {},
     formData: {},
     pageTitle: 'Register',
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken ? req.csrfToken() : ''
   });
 });
 
@@ -106,7 +104,7 @@ router.post(
           fieldErrors: errors.mapped(),
           formData,
           pageTitle: 'Register',
-          csrfToken: req.csrfToken()
+          csrfToken: req.csrfToken ? req.csrfToken() : ''
         });
       }
 
@@ -146,7 +144,7 @@ router.post(
         qrDataUrl,
         secret: secret.base32,
         error: null,
-        csrfToken: req.csrfToken(),
+        csrfToken: req.csrfToken ? req.csrfToken() : '',
         pageTitle: 'Verify TOTP'
       });
     } catch (err) {
@@ -165,7 +163,7 @@ router.post(
             username: req.body.username || ''
           },
           pageTitle: 'Register',
-          csrfToken: req.csrfToken()
+          csrfToken: req.csrfToken ? req.csrfToken() : ''
         });
       }
       next(err);
@@ -206,7 +204,7 @@ router.get('/verify-totp', async (req, res, next) => {
       qrDataUrl,
       secret: user.totp_secret,
       error: null,
-      csrfToken: req.csrfToken(),
+      csrfToken: req.csrfToken ? req.csrfToken() : '',
       pageTitle: 'Verify TOTP'
     });
   } catch (err) {
@@ -256,7 +254,7 @@ router.post('/verify-totp', async (req, res, next) => {
         qrDataUrl,
         secret: user.totp_secret,
         error: 'Invalid code, try again',
-        csrfToken: req.csrfToken(),
+        csrfToken: req.csrfToken ? req.csrfToken() : '',
         pageTitle: 'Verify TOTP'
       });
     }
