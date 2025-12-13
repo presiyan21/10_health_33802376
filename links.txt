@@ -5,9 +5,6 @@ workout_search=https://www.doc.gold.ac.uk/usr/389/workouts/search
 posts=https://www.doc.gold.ac.uk/usr/389/posts
 example_post=https://www.doc.gold.ac.uk/usr/389//posts/2
 
-
-
-
 // login required before access
 https://www.doc.gold.ac.uk/usr/389//posts/new
 https://www.doc.gold.ac.uk/usr/389/workouts/dashboard
