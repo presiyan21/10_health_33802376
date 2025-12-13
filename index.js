@@ -1,3 +1,4 @@
+// index.js (replace your current file with this)
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -15,7 +16,7 @@ const port = Number(process.env.PORT) || 8000;
 const BASE = process.env.BASE_PATH || '';
 app.locals.base = BASE;
 
-// expose a full basePath 
+// expose a full basePath (useful for emails / absolute links)
 app.locals.basePath = process.env.HEALTH_BASE_PATH || `http://localhost:${port}`;
 
 const TRUST_PROXY = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true';
@@ -27,6 +28,7 @@ if (TRUST_PROXY) {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+// static assets (served under BASE if set)
 if (BASE) {
   app.use(BASE, express.static(path.join(__dirname, 'public')));
   app.use(`${BASE}/uploads`, express.static(path.join(__dirname, 'uploads')));
@@ -46,37 +48,49 @@ const sessionCookieSecure = process.env.SESSION_COOKIE_SECURE === 'true';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'somefallbacksecret',
   resave: false,
-  saveUninitialized: false,
+  saveUninitialized: false,           // keep false for privacy; csurf will create a session when needed
   cookie: {
     maxAge: 60 * 60 * 1000,
-    secure: sessionCookieSecure, 
-    path: BASE || '/'            
+    secure: sessionCookieSecure,
+    path: BASE || '/',
+    httpOnly: true,
+    sameSite: 'lax'
   }
 }));
 
-// CSRF protection 
-const csrfProtection = csurf();
+const globalCsurf = csurf({ cookie: false });
+
 app.use((req, res, next) => {
-  const apiPrefix = `${BASE}/api`;
+  const apiPrefix = (BASE ? `${BASE}/api` : '/api');
+
+  // Skip API endpoints (they're unauthenticated or have their own protection)
   if (req.path.startsWith(apiPrefix)) return next();
 
+  // Skip multipart POSTs here (file uploads will apply csurf per-route)
   const ct = String(req.headers['content-type'] || '').toLowerCase();
-  if (req.method === 'POST' && ct.includes('multipart/form-data')) {
-    return next();
-  }
+  if (req.method === 'POST' && ct.includes('multipart/form-data')) return next();
 
-  csrfProtection(req, res, next);
+  // Run csurf for all other requests (adds req.csrfToken())
+  return globalCsurf(req, res, next);
 });
 
-// make base and helper and csrf token available in views
+// expose csrf token and helpers to views
 app.use((req, res, next) => {
-  res.locals.csrfToken = typeof req.csrfToken === 'function' ? req.csrfToken() : null;
+  try {
+    // req.csrfToken will exist when csurf has been applied; otherwise fallback to empty string
+    res.locals.csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() : '';
+  } catch (e) {
+    // In very rare cases csurf may throw — present empty token so templates don't crash.
+    res.locals.csrfToken = '';
+  }
+
   res.locals.base = BASE || '';
   res.locals.buildUrl = (p) => {
     if (!p) return BASE || '/';
     const pathPart = p.startsWith('/') ? p : `/${p}`;
     return (BASE || '') + pathPart;
   };
+
   next();
 });
 
@@ -140,7 +154,7 @@ if (BASE) {
 
 // Global error handler 
 app.use((err, req, res, next) => {
-  console.error('ERROR:', err);
+  console.error('ERROR:', err && err.stack ? err.stack : err);
 
   // Ensure locals exist
   res.locals.currentUser = res.locals.currentUser || null;

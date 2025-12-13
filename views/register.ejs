@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Register - <%= siteName %></title>
-    <link rel="stylesheet" href="<%= basePath %>/main.css" />
+    <link rel="stylesheet" href="<%= base %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -21,7 +21,7 @@
         </div>
       <% } %>
 
-      <form id="registerForm" method="POST" action="<%= basePath %>/users/registered" novalidate>
+      <form id="registerForm" method="POST" action="<%= base %>/users/registered" novalidate>
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
 
         <p class="form-row">
@@ -63,7 +63,7 @@
         <p><button class="btn" type="submit">Register</button></p>
       </form>
 
-      <script src="<%= basePath %>/js/register.js"></script>
+      <script src="<%= base %>/js/register.js"></script>
     </div>
 
     <%- include('partials/footer') %>

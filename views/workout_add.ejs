@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Add Workout - <%= siteName %></title>
-    <link rel="stylesheet" href="<%= basePath %>/main.css" />
+    <link rel="stylesheet" href="<%= base %>/main.css" />
   </head>
   <body>
     <%- include('partials/header') %>
@@ -19,7 +19,7 @@
         </div>
       <% } %>
 
-      <form method="POST" action="<%= basePath %>/workouts/add">
+      <form method="POST" action="<%= base %>/workouts/add">
         <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
 
         <p>
