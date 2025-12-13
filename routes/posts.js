@@ -127,7 +127,7 @@ router.post('/:id/comment', requireLogin, async (req, res, next) => {
 
     const content = req.sanitize ? req.sanitize(req.body.content || '') : (req.body.content || '');
     if (!content.trim()) {
-      // JSON clients for structured errors
+      // JSON clients errors
       if (req.headers.accept?.includes('application/json')) {
         return res.status(400).json({ success: false, error: 'Comment required' });
       }

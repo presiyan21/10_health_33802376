@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="Health &amp; Fitness Tracker" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="0.0" lon="0.0">
+    <name>Workout - 01/12/2025</name>
+    <desc>Activity: Running
+Date: 01/12/2025
+Duration (mins): 45
+Calories: 420
+Notes: Felt good, steady pace.</desc>
+  </wpt>
+
+  <wpt lat="0.0" lon="0.0">
+    <name>Workout - 02/12/2025</name>
+    <desc>Activity: Cycling
+Date: 02/12/2025
+Duration (mins): 60
+Calories: 550
+Notes: Light wind, smooth ride.</desc>
+  </wpt>
+
+  <wpt lat="0.0" lon="0.0">
+    <name>Workout - 03/12/2025</name>
+    <desc>Activity: Strength Training
+Date: 03/12/2025
+Duration (mins): 40
+Calories: 300
+Notes: Good upper-body session.</desc>
+  </wpt>
+
+  <wpt lat="0.0" lon="0.0">
+    <name>Workout - 04/12/2025</name>
+    <desc>Activity: Swimming
+Date: 04/12/2025
+Duration (mins): 35
+Calories: 280
+Notes: Nice and relaxed in the pool.</desc>
+  </wpt>
+
+  <wpt lat="0.0" lon="0.0">
+    <name>Workout - 05/12/2025</name>
+    <desc>Activity: Hiking
+Date: 05/12/2025
+Duration (mins): 90
+Calories: 600
+Notes: Great views, long hill climb.</desc>
+  </wpt>
+</gpx>

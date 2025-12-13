@@ -15,7 +15,7 @@ const port = Number(process.env.PORT) || 8000;
 const BASE = process.env.BASE_PATH || '';
 app.locals.base = BASE;
 
-// expose a full basePath (useful for emails / absolute links)
+// expose a full basePath 
 app.locals.basePath = process.env.HEALTH_BASE_PATH || `http://localhost:${port}`;
 
 const TRUST_PROXY = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true';
@@ -27,7 +27,7 @@ if (TRUST_PROXY) {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// static assets (served under BASE if set)
+// static assets 
 if (BASE) {
   app.use(BASE, express.static(path.join(__dirname, 'public')));
   app.use(`${BASE}/uploads`, express.static(path.join(__dirname, 'uploads')));
@@ -47,7 +47,7 @@ const sessionCookieSecure = process.env.SESSION_COOKIE_SECURE === 'true';
 app.use(session({
   secret: process.env.SESSION_SECRET || 'somefallbacksecret',
   resave: false,
-  saveUninitialized: false,           // keep false for privacy; csurf will create a session when needed
+  saveUninitialized: false,           
   cookie: {
     maxAge: 60 * 60 * 1000,
     secure: sessionCookieSecure,
@@ -62,24 +62,22 @@ const globalCsurf = csurf({ cookie: false });
 app.use((req, res, next) => {
   const apiPrefix = (BASE ? `${BASE}/api` : '/api');
 
-  // Skip API endpoints (they're unauthenticated or have their own protection)
+  // Skip API endpoints 
   if (req.path.startsWith(apiPrefix)) return next();
 
-  // Skip multipart POSTs here (file uploads will apply csurf per-route)
+  // Skip multipart POSTs here 
   const ct = String(req.headers['content-type'] || '').toLowerCase();
   if (req.method === 'POST' && ct.includes('multipart/form-data')) return next();
 
-  // Run csurf for all other requests (adds req.csrfToken())
+  // Run csurf for all other requests 
   return globalCsurf(req, res, next);
 });
 
 // expose csrf token and helpers to views
 app.use((req, res, next) => {
   try {
-    // req.csrfToken will exist when csurf has been applied; otherwise fallback to empty string
     res.locals.csrfToken = (typeof req.csrfToken === 'function') ? req.csrfToken() : '';
   } catch (e) {
-    // In very rare cases csurf may throw — present empty token so templates don't crash.
     res.locals.csrfToken = '';
   }
 

@@ -6,7 +6,7 @@ USE health;
 SET @now = NOW();
 
 -- ===========================
--- 1. Users
+--  Users
 -- ===========================
 INSERT IGNORE INTO users (username, first_name, last_name, email, hashed_password, role, is_verified, created_at)
 VALUES
@@ -22,7 +22,7 @@ VALUES
 UPDATE users SET totp_secret = 'JBSWY3DPEHPK3PXP' WHERE username = 'gold';
 
 -- ===========================
--- 2. Workouts
+--  Workouts
 -- ===========================
 INSERT INTO workouts (user_id, activity, activity_date, duration_mins, calories, notes, source, is_public, created_at)
 VALUES
@@ -32,7 +32,7 @@ VALUES
   ((SELECT id FROM users WHERE username='bob' LIMIT 1), 'Strength Training', '2025-11-25', 50, 350, 'Upper-body focus', 'manual', 1, '2025-11-25 10:00:00');
 
 -- ===========================
--- 3. Community posts
+--  Community posts
 -- ===========================
 INSERT INTO posts (user_id, title, content, created_at)
 VALUES
@@ -40,7 +40,7 @@ VALUES
   ((SELECT id FROM users WHERE username='steve' LIMIT 1), 'Workout ideas', 'Looking for 30-minute HIIT routines that build speed. Any suggestions?', '2025-12-06 22:26:28');
 
 -- ===========================
--- 4. Comments for posts
+--  Comments for posts
 -- ===========================
 INSERT INTO comments (post_id, user_id, content, created_at)
 VALUES
@@ -49,7 +49,7 @@ VALUES
    'Hi all, so glad to be here!', '2025-12-04 19:00:00');
 
 -- ===========================
--- 5. Audit log samples
+--  Audit log samples
 -- ===========================
 INSERT INTO audit_log (username, status, attempt_time)
 VALUES
@@ -58,7 +58,7 @@ VALUES
   ('unknown', 'FAILURE', '2025-12-05 11:11:00');
 
 -- ===========================
--- 6. Final sanity check
+--  Final sanity check
 -- ===========================
 SELECT 'seed complete' AS note;
 SELECT COUNT(*) AS users_total FROM users;

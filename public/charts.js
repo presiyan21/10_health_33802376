@@ -28,7 +28,7 @@ async function renderWeeklyChart(canvasId = 'weeklyChart') {
     // Drop the old chart if one exists
     if (weeklyChartInstance) weeklyChartInstance.destroy();
 
-    // Create a simple bar chart
+    // Create a bar chart
     weeklyChartInstance = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -49,7 +49,6 @@ async function renderWeeklyChart(canvasId = 'weeklyChart') {
       }
     });
   } catch (err) {
-    // Keep errors visible in dev tools
     console.error('Chart load failed:', err);
   }
 }

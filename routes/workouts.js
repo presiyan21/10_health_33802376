@@ -126,7 +126,7 @@ router.post(
         })
       }
 
-      // allow sanitise middleware if present
+      // allow sanitise middleware 
       const activity = req.sanitize ? req.sanitize(req.body.activity) : req.body.activity
       const activity_date = req.sanitize ? req.sanitize(req.body.activity_date) : req.body.activity_date
       const duration_mins = parseInt(req.body.duration_mins, 10)
@@ -337,7 +337,7 @@ router.post('/post/:id/comment', requireLogin, attachUpload.single('attachment')
 
   const conn = await db.getConnection()
   try {
-    // need transaction to keep comment + attachment atomic
+    // transaction to keep comment + attachment 
     await conn.beginTransaction()
 
     const [result] = await conn.execute(
@@ -400,7 +400,7 @@ router.get('/export', requireLogin, async (req, res, next) => {
       [userId]
     )
 
-    // build CSV manually to avoid a heavy lib dependency
+    // build CSV manually
     const header = ['activity_date', 'activity', 'duration_mins', 'calories', 'notes', 'source']
     const lines = [header.join(',')]
 
@@ -466,7 +466,7 @@ router.post(
     const escapeAmp = s =>
       s.replace(/&(?!(?:amp|lt|gt|apos|quot|#[0-9]+|#x[0-9a-fA-F]+);)/g, '&amp;')
 
-    // fallback parser for text exports from phone apps
+    // parser for text exports from phone apps
     const plainTextToInserts = text => {
       const toIso = d => {
         const p = d.split('/')
@@ -508,7 +508,7 @@ router.post(
       })
     }
 
-    // wraps DB insert so both GPX and text fallbacks reuse the same path
+    // DB insert so both GPX and text reuse the same path
     const insertOne = async ({ activity, dateIso, durationMins, calories, notes, source = 'gpx' }) => {
       await db.execute(
         `INSERT INTO workouts (user_id, activity, activity_date, duration_mins, calories, notes, source)
@@ -577,7 +577,7 @@ router.post(
 
             const desc = (wpt.desc?.[0] || '').toString()
 
-            // waypoint exports often embed metadata inside <desc>
+            // waypoint exports embed metadata inside
             const dateMatch1 = desc.match(/Date:\s*([0-3]?\d\/[0-1]?\d\/\d{4})/i)
             const dateMatch2 = desc.match(/Date:\s*(\d{4}-\d{2}-\d{2})/i)
             const dateIso = dateMatch2
@@ -603,7 +603,7 @@ router.post(
           })
         }
 
-        // fallback track if XML parsed but contained neither trk nor wpt
+        // track if XML parsed but contained neither trk nor wpt
         if (!inserts.length) {
           inserts.push({
             activity: path.basename(req.file.originalname, path.extname(req.file.originalname)),
@@ -620,7 +620,7 @@ router.post(
         )
       }
 
-      // final fallback – treat file as plaintext export
+      // treat file as plaintext export
       const plain = plainTextToInserts(content)
       if (!plain.length) throw new Error('File is neither valid GPX XML nor recognizable text export')
 
@@ -649,7 +649,7 @@ router.get('/weekly-totals', requireLogin, async (req, res, next) => {
   try {
     const userId = req.session.userId
 
-    // aggregate last ~2 months by ISO week
+    // aggregate last 2 months by ISO week
     const [rows] = await db.execute(
       `SELECT YEARWEEK(activity_date, 1) AS yw, MIN(activity_date) AS week_start,
               SUM(duration_mins) AS total_mins
@@ -664,7 +664,7 @@ router.get('/weekly-totals', requireLogin, async (req, res, next) => {
     const totals = []
     const mapByStart = {}
 
-    // normalize rows into lookup by week_start
+    // rows into lookup by week_start
     rows.forEach(r => {
       const ws = r.week_start?.toISOString?.()
         ? r.week_start.toISOString().slice(0, 10)
@@ -672,7 +672,7 @@ router.get('/weekly-totals', requireLogin, async (req, res, next) => {
       mapByStart[ws] = Number(r.total_mins || 0)
     })
 
-    // exactly 8 buckets in order
+    // 8 buckets in order
     for (let i = 7; i >= 0; i--) {
       const d = new Date()
       d.setDate(d.getDate() - i * 7)
