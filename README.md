@@ -34,12 +34,14 @@ npm install
 
 ### 3. Set up environment
 ```bash
-HEALTH_HOST=
-HEALTH_USER=
-HEALTH_PASSWORD=
-HEALTH_DATABASE=
-SESSION_SECRET=
-HEALTH_BASE_PATH=
+HEALTH_HOST=localhost
+HEALTH_USER=health_app
+HEALTH_PASSWORD=qwertyuiop
+HEALTH_DATABASE=health
+HEALTH_BASE_PATH=http://localhost:8000
+
+PORT=8000
+SESSION_SECRET=verysecretpleasechange
 ```
 
 ### 4. Prepare the database
